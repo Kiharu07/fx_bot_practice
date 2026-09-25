@@ -1,4 +1,4 @@
 開発ログ
 
 2026/09/25
-開発開始。無料期間が気になる。大挙動を実装。yfinainceをpip install
+開発開始。無料期間が気になる。大挙動を実装。yfinainceをpip install。売り取引を想定
