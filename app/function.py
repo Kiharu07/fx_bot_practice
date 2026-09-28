@@ -9,6 +9,11 @@ BB_WIDTH = 10 #ボリンジャーバンド計算時に使うデータのリス�
 SELL_BORDER = 70 #sell_pointと比べて売判断する閾値
 BUY_BORDER = 70 #buy_pointと比べて買判断する閾値
 
+GOLDEN_CROSS = 1 #ゴールデンクロスのフラッグ
+DEAD_CROSS = -1 #デッドクロスのフラッグ
+
+
+
 """オートメーション"""
 
 
@@ -59,3 +64,27 @@ def is_golden_cross(data:dict)->bool:
         return True
     else:
         return False
+
+def is_dead_cross(data:dict)->bool:
+    """
+    デッドクロスかどうかを判定する。\n
+    直近の2データの短期移動平均線が長期移動平均線を上から下に突き抜けたらTrueを返す。
+    """
+    if data['ma_short_list'][-2] > data['ma_long_list'][-2] and data['ma_short_list'][-1] < data['ma_long_list'][-1]:
+        return True
+    else:
+        return False
+
+"""判断関係(strategyブロック)"""
+def st_ma_long_over_short(data:dict)->int:
+    """
+    最新のデータにおいて長期移動平均線が短期移動平均線を上回っているかどうかを判定する。\n
+    長期移動平均線が短期移動平均線を上回っていたら「1」、それ以外は「0」を返し有効化。
+    """
+    if data['ma_long_list'][-1] > data['ma_short_list'][-1]:
+        return 1
+    else:
+        return 0
+
+if __name__ == "__main__":
+    print('function.pyを実行します。')

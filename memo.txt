@@ -1,7 +1,11 @@
 開発ログ
 
+"""notice"""
+function.pyとapp.pyの定数置き場の更新忘れるな。
+
 2026-09-25
 開発開始。無料期間が気になる。大挙動を実装。yfinainceをpip install。売り取引を想定
 2026-09-28
-テクニカル指標作成に着手。ma,bbある程度完成。二つで実装してみる。golden_crossも少し作ったお。
-function.pyとapp.pyの定数置き場の更新忘れるな
+テクニカル指標作成に着手。ma,bbある程度完成。二つで実装してみる。golden_crossも少し作った。
+売りで運用するうえでdead_cross状態が都合いいのは、開発上、何かしら問題の種になるかも？
+strategyが最小完成。次回、yfinanceからの取り出しの予定。
