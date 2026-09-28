@@ -46,3 +46,13 @@ def bb(data:dict,start_index:int,end_index:int)->list:
     up2 = ave + 2*std
     down2 = ave - 2*std
     return [up1,down1,up2,down2]
+
+def is_golden_cross(data:dict)->bool:
+    """
+    ゴールデンクロスかどうかを判定する。\n
+    直近の2データの短期移動平均線が長期移動平均線を下から上に突き抜けたらTrueを返す。
+    """
+    if data['ma_short_list'][-2] < data['ma_long_list'][-2] and data['ma_short_list'][-1] > data['ma_long_list'][-1]:
+        return True
+    else:
+        return False
