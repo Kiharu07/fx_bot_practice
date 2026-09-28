@@ -22,9 +22,9 @@ import time
 """
 #定数置き場：開発途中でconfig.yamlに移します。
 STREAM_LENGTH = 15 #streamの長さ
-MA_SHORT_WIDTH = 5 #短期移動平均線計算時の長さ
-MA_LONG_WIDTH = 10 #長期移動平均線計算時の長さ
-BB_WIDTH = 10 #ボリンジャーバンド計算時の長さ
+MA_SHORT_WIDTH = 5 #短期移動平均線計算時に使うデータのリスト幅
+MA_LONG_WIDTH = 10 #長期移動平均線計算時に使うデータのリスト幅
+BB_WIDTH = 10 #ボリンジャーバンド計算時に使うデータのリスト幅
 
 SELL_BORDER = 70 #sell_pointと比べて売判断する閾値
 BUY_BORDER = 70 #buy_pointと比べて買判断する閾値
