@@ -9,3 +9,5 @@ function.pyとapp.pyの定数置き場の更新忘れるな。
 テクニカル指標作成に着手。ma,bbある程度完成。二つで実装してみる。golden_crossも少し作った。
 売りで運用するうえでdead_cross状態が都合いいのは、開発上、何かしら問題の種になるかも？
 strategyが最小完成。次回、yfinanceからの取り出しの予定。
+2026-09-29
+yfinanceのテストを行いました。matplotlibはcodespaceでは使えないようだ。

@@ -1,6 +1,8 @@
 import function as func
 import random
 import time
+import yfinance as yf
+import pandas as pd
 
 #大挙動
 """

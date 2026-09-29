@@ -1,4 +1,7 @@
 import random
+import yfinance as yf
+import pandas as pd
+import matplotlib.pyplot as plt
 
 #定数置き場：開発途中でconfig.yamlに移します。
 STREAM_LENGTH = 15 #streamの長さ
@@ -88,3 +91,16 @@ def st_ma_long_over_short(data:dict)->int:
 
 if __name__ == "__main__":
     print('function.pyを実行します。')
+    example = yf.download('JPY=X', period='5d', interval='1d')
+    print(example)
+"""
+"""
+    plt.figure(figsize=(10, 5))#これはグラフのサイズを指定するためのコードです。figsize=(10, 5)は、横幅が10インチ、縦幅が5インチのグラフを作成することを意味します。
+    plt.plot(example["Close"])
+
+    plt.title("JPY=X Close Price")#グラフのタイトルを設定するためのコードです。plt.title()関数を使用して、グラフの上部にタイトルを表示します。
+    plt.xlabel("Date")#グラフのx軸のラベルを設定するためのコードです。plt.xlabel()関数を使用して、x軸の下にラベルを表示します。
+    plt.ylabel("Close Price")#グラフのy軸のラベルを設定するためのコードです。plt.ylabel()関数を使用
+    #して、y軸の左側にラベルを表示します。
+    plt.show()
+"""
