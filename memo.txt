@@ -11,3 +11,6 @@ function.pyとapp.pyの定数置き場の更新忘れるな。
 strategyが最小完成。次回、yfinanceからの取り出しの予定。
 2026-09-29
 yfinanceのテストを行いました。matplotlibはcodespaceでは使えないようだ。
+2026-10-02
+yfinanceでデータの取り出しに成功。
+GMOコインの口座が開設出来たら開始できそう。APIも安そう。スプレッドは0.002pipsなので、短期すぎないように注意が必要。

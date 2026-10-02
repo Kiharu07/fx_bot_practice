@@ -4,6 +4,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 #定数置き場：開発途中でconfig.yamlに移します。
+INTERVAL = 10 #データ取得間隔（秒）
 STREAM_LENGTH = 15 #streamの長さ
 MA_SHORT_WIDTH = 5 #短期移動平均線計算時に使うデータのリスト幅
 MA_LONG_WIDTH = 10 #長期移動平均線計算時に使うデータのリスト幅
@@ -38,7 +39,7 @@ def ma(data:dict,start_index:int,end_index:int)->float:
     """
     sum = 0
     for i in range(start_index,end_index):
-        sum += data['stream'][i]
+        sum += data['stream']['close'][i]
     ave = sum / (end_index - start_index)
     return ave
 
@@ -50,7 +51,7 @@ def bb(data:dict,start_index:int,end_index:int)->list:
     ave = ma(data,start_index,end_index)
     sum = 0
     for i in range(start_index,end_index):
-        sum += (data['stream'][i] - ave)**2
+        sum += (data['stream']['close'][i] - ave)**2
     std = (sum / (end_index - start_index))**0.5
     up1 = ave + std
     down1 = ave - std
@@ -93,8 +94,9 @@ if __name__ == "__main__":
     print('function.pyを実行します。')
     example = yf.download('JPY=X', period='5d', interval='1d')
     print(example)
+
 """
-"""
+
     plt.figure(figsize=(10, 5))#これはグラフのサイズを指定するためのコードです。figsize=(10, 5)は、横幅が10インチ、縦幅が5インチのグラフを作成することを意味します。
     plt.plot(example["Close"])
 

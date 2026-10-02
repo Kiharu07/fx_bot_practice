@@ -24,6 +24,7 @@ import pandas as pd
 """
 
 #定数置き場：開発途中でconfig.yamlに移します。
+INTERVAL = 2 #データ取得間隔（秒） 
 STREAM_LENGTH = 15 #streamの長さ
 MA_SHORT_WIDTH = 5 #短期移動平均線計算時に使うデータのリスト幅
 MA_LONG_WIDTH = 10 #長期移動平均線計算時に使うデータのリスト幅
@@ -43,7 +44,14 @@ if __name__ == "__main__":
 
 #初期設定
 data = {
-    'stream': [],#データストリーム
+    'trade_price': 0,#取引価格
+    'stream': {
+         'close': [],
+         'high': [],
+         'low': [],
+         'open': [],
+         'volume': [],
+    },#データストリーム
     'status': 'idle',#sell,idleで保持状態を表記
     'sell_point': 0,
     'sell_stop_point': 0,
@@ -60,13 +68,25 @@ data = {
 
 
 while True:
+    information_set = yf.download("JPY=X", period="1d", interval="1m") #期間1日で1分足のデータを取得(テストなので。のちに５分足や15分足に変更予定)
+    latest = information_set.iloc[-1] #最新のデータを取得
+
+    now_close = latest['Close']['JPY=X'] #最新の終値を取得
+    now_high = latest['High']['JPY=X'] #最新の最高値を取得
+    now_low = latest['Low']['JPY=X'] #最新の最低値を取得
+    now_open = latest['Open']['JPY=X'] #最新の始値を取得
+    now_volume = latest['Volume']['JPY=X'] #最新の出来高を取得
+
     #データを取得（後にyfinanceで取得）
-    now_price = func.dummy_price01()
     
     #データを格納
-    data['stream'].append(now_price)
+    data['stream']['close'].append(now_close)
+    data['stream']['high'].append(now_high)
+    data['stream']['low'].append(now_low)
+    data['stream']['open'].append(now_open)
+    data['stream']['volume'].append(now_volume)
 
-    if len(data['stream']) <= STREAM_LENGTH:
+    if len(data['stream']['close']) <= STREAM_LENGTH:
         print('データ準備中')
         data['ma_short_list'].append(0)
         data['ma_long_list'].append(0)
@@ -81,7 +101,11 @@ while True:
     #データリストが特定以上になったら古い順に削除。
     else:
         #古いデータを削除（絶対最初に）
-        data['stream'].pop(0)
+        data['stream']['close'].pop(0)
+        data['stream']['high'].pop(0)
+        data['stream']['low'].pop(0)
+        data['stream']['open'].pop(0)
+        data['stream']['volume'].pop(0)     
         data['ma_short_list'].pop(0)
         data['ma_long_list'].pop(0)
         data['bb_dict']['up1'].pop(0)
@@ -128,11 +152,12 @@ while True:
         if data['status']=='idle' and data['sell_point'] >= SELL_BORDER:
             print('売り注文。')
             data['status'] = 'sell'
+            data['trade_price'] = now_close
         elif data['status']=='sell' and data['sell_stop_point'] <= SELL_STOP_BORDER:
             print('取引完了。')
             data['status'] = 'idle'
-    
+            data['trade_price'] = 0 #ここでバグが発生するかも。
     #ログに保存
     #print(f"リスト:{data['stream']},sell:{data['sell_point']},buy:{data['sell_stop_point']},status:{data['status']}")
     print(data)
-    time.sleep(0.5)
+    time.sleep(INTERVAL)
