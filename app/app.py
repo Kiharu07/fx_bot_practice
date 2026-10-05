@@ -29,6 +29,7 @@ STREAM_LENGTH = 15 #streamの長さ
 MA_SHORT_WIDTH = 5 #短期移動平均線計算時に使うデータのリスト幅
 MA_LONG_WIDTH = 10 #長期移動平均線計算時に使うデータのリスト幅
 BB_WIDTH = 10 #ボリンジャーバンド計算時に使うデータのリスト幅
+EXTREMUM_WIDTH = 2 #極値判定時に使うデータのリスト幅。左右です。左2個右2個「〇〇〇今〇〇〇」というデータで。
 
 SELL_BORDER = 9 #sell_pointと比べて売判断する閾値
 SELL_STOP_BORDER = 70 #sell_stop_pointと比べて取引終了判断する閾値
@@ -52,6 +53,10 @@ data = {
          'open': [],
          'volume': [],
     },#データストリーム
+    'extremum': {#極値。is_lowestは最低値かどうかのフラッグで0:False、1:True、rowはその時の行番号
+      'is_lowest': [],
+      'row': [],
+    },
     'status': 'idle',#sell,idleで保持状態を表記
     'sell_point': 0,
     'sell_stop_point': 0,

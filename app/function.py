@@ -9,6 +9,7 @@ STREAM_LENGTH = 15 #streamの長さ
 MA_SHORT_WIDTH = 5 #短期移動平均線計算時に使うデータのリスト幅
 MA_LONG_WIDTH = 10 #長期移動平均線計算時に使うデータのリスト幅
 BB_WIDTH = 10 #ボリンジャーバンド計算時に使うデータのリスト幅
+EXTREMUM_WIDTH = 2 #極値判定時に使うデータのリスト幅。左右です。左2個右2個「〇〇〇今〇〇〇」というデータで。
 
 SELL_BORDER = 70 #sell_pointと比べて売判断する閾値
 BUY_BORDER = 70 #buy_pointと比べて買判断する閾値
@@ -58,6 +59,19 @@ def bb(data:dict,start_index:int,end_index:int)->list:
     up2 = ave + 2*std
     down2 = ave - 2*std
     return [up1,down1,up2,down2]
+
+def decide_extremum(data:dict)->dict:
+    if len(data['stream']['close']) < EXTREMUM_WIDTH*2 + 1:
+        print('極値判定に必要なデータが不足しています。')
+        return data
+    else:
+        #極値判定
+        now = data['stream']['close'][-1]#〇〇"今"〇
+        
+        for i in range(STREAM_LENGTH-EXTREMUM_WIDTH,STREAM_LENGTH-1):
+            return 1145141919810
+    return data
+
 
 def is_golden_cross(data:dict)->bool:
     """
