@@ -1,7 +1,7 @@
 import random
 import yfinance as yf
 import pandas as pd
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
 
 #定数置き場：開発途中でconfig.yamlに移します。
 INTERVAL = 10 #データ取得間隔（秒）
@@ -93,6 +93,24 @@ def is_dead_cross(data:dict)->bool:
     else:
         return False
 
+def is_bb_over_up_2sigma(data:dict)->bool:
+    """
+    ボリンジャーバンドの+2σを上回ったらTrueを返す。\n
+    """
+    if data['stream']['close'][-1] > data['bb_dict']['up2'][-1]:
+        return True
+    else:
+        return False
+
+def is_bb_under_down_2sigma(data:dict)->bool:
+    """
+    ボリンジャーバンドの-2σを下回ったらTrueを返す。\n
+    """
+    if data['stream']['close'][-1] < data['bb_dict']['down2'][-1]:
+        return True
+    else:
+        return False
+
 """判断関係(strategyブロック)"""
 def st_ma_long_over_short(data:dict)->int:
     """
@@ -103,6 +121,26 @@ def st_ma_long_over_short(data:dict)->int:
         return 1
     else:
         return 0
+
+def st_break_bb_up(data:dict)->int:
+    """
+    3回連続してBB+2σラインを超えたら「1」、それ以外は「0」を返す。\n
+    """
+    if data['bb_over_2sigma_list'][-3:] == [1,1,1]:
+        return 1
+    else:
+        return 0
+
+def st_break_bb_down(data:dict)->int:
+    """
+    3回連続してBB-2σラインを下回ったら「1」、それ以外は「0」を返す。\n
+    """
+    if data['bb_over_2sigma_list'][-3:] == [-1,-1,-1]:
+        return 1
+    else:
+        return 0
+
+
 
 if __name__ == "__main__":
     print('function.pyを実行します。')

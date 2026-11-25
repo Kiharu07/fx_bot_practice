@@ -32,13 +32,15 @@ BB_WIDTH = 10 #ボリンジャーバンド計算時に使うデータのリス�
 EXTREMUM_WIDTH = 2 #極値判定時に使うデータのリスト幅。左右です。左2個右2個「〇〇〇今〇〇〇」というデータで。
 
 SELL_BORDER = 9 #sell_pointと比べて売判断する閾値
-SELL_STOP_BORDER = 70 #sell_stop_pointと比べて取引終了判断する閾値
+SELL_STOP_BORDER = 9 #sell_stop_pointと比べて取引終了判断する閾値
 
 GOLDEN_CROSS = 1 #ゴールデンクロスのフラッグ
 DEAD_CROSS = -1 #デッドクロスのフラッグ
 
 #ストラテジー重み格納庫：こちらも開発途中でconfig.yamlに移します。
 WEIGHT_MA_LONG_OVER_SHORT = 10 #長期移動平均線が短期移動平均線を上回っているかどうかの重み
+WEIGHT_BREAK_BB_UP = 10 #ボリンジャーバンドの+2σを3回連続で上回ったかどうかの重み
+WEIGHT_BREAK_BB_DOWN = 10 #ボリンジャーバンドの-2σを3回連続で下回ったかどうかの重み
 
 if __name__ == "__main__":
     print('app.pyを実行します。')
@@ -58,6 +60,8 @@ data = {
       'row': [],
     },
     'status': 'idle',#sell,idleで保持状態を表記
+    'buy_point': 0,
+    'buy_stop_point': 0,
     'sell_point': 0,
     'sell_stop_point': 0,
     'ma_short_list': [],#短期移動平均線のリスト
@@ -68,7 +72,8 @@ data = {
         'up2': [],
         'down2': [],
     },
-    "cross_list": [],#ゴールデン、デッドクロスのリスト
+    "cross_list": [],#ad_tech01:ゴールデン、デッドクロスのリスト
+    "bb_over_2sigma_list": [],#ad_tech02:ボリンジャーバンドの+2σを上回る「1」か-2σを下回る「-1」かのリスト
 }
 
 
@@ -118,6 +123,7 @@ while True:
         data['bb_dict']['up2'].pop(0)
         data['bb_dict']['down2'].pop(0)
         data['cross_list'].pop(0)
+        data['bb_over_2sigma_list'].pop(0)
 
         #テクニカル指標の格納
         ma_short = func.ma(data,STREAM_LENGTH-MA_SHORT_WIDTH,STREAM_LENGTH)#短期ma
@@ -132,13 +138,21 @@ while True:
         data['bb_dict']['up2'].append(bb_set[2])
         data['bb_dict']['down2'].append(bb_set[3])
 
-        #ゴールデンクロス、デッドクロスの判定、格納。
+        #ad_tech01:ゴールデンクロス、デッドクロスの判定、格納。
         if func.is_golden_cross(data):
                 data['cross_list'].append(GOLDEN_CROSS)
         elif func.is_dead_cross(data):
                 data['cross_list'].append(DEAD_CROSS)
         else:
                 data['cross_list'].append(0)
+
+        #ad_tech02:ボリンジャーバンドの+2σを上回る「1」か-2σを下回る「-1」かの判定、格納。
+        if func.is_bb_over_up_2sigma(data):
+                data['bb_over_2sigma_list'].append(1)
+        elif func.is_bb_under_down_2sigma(data):
+                data['bb_over_2sigma_list'].append(-1)
+        else:
+                data['bb_over_2sigma_list'].append(0)
 
         """↑テクニカル指標操作ここまで↑（↓ここから下は判定↓）"""
 
@@ -147,10 +161,18 @@ while True:
 
         s_stop_1 = func.st_ma_long_over_short(data)*WEIGHT_MA_LONG_OVER_SHORT
 
+        buy_2 = func.st_break_bb_up(data)*WEIGHT_BREAK_BB_UP#BB+2σを3回連続で上回ったかどうかの判定
+        b_stop_2 = 1-(func.st_break_bb_up(data)*WEIGHT_BREAK_BB_UP)#BB+2σを3回連続で上回らなかった瞬間それは取引終了のフラッグになるので、1から引くことで取引終了のフラッグを作る。
         
+        sell_2 = func.st_break_bb_down(data)*WEIGHT_BREAK_BB_DOWN#BB-2σを3回連続で下回ったかどうかの判定
+        s_stop_2 = 1-(func.st_break_bb_down(data)*WEIGHT_BREAK_BB_DOWN)#BB-2σを3回連続で下回らなかった瞬間それは取引終了のフラッグになるので、1から引くことで取引終了のフラッグを作る。
+
         #売買点を計算（今はまだ）
-        data['sell_point'] = sell_1 #今後ここに足していく
-        data['sell_stop_point'] = random.randint(0,100)#上と同じようにs_stop_1を足していく
+        data['buy_point'] = buy_2  #今後ここに足していく
+        data['buy_stop_point'] = b_stop_2 #上と同じようにb_stop_3,4,を足していく
+        data['sell_point'] = sell_2 #今後ここに足していく
+        data['sell_stop_point'] = s_stop_2 #上と同じようにs_stop_3,4,を足していく
+        #没だけど残しとくひな形data['sell_stop_point'] = random.randint(0,100)#上と同じようにs_stop_1を足していく
 
 
         #売買判断を閾値で判定→取引→フラッグ
